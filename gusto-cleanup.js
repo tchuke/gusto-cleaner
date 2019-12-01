@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gusto Cleanup
 // @namespace    http://tampermonkey.net/
-// @version      0.01
+// @version      0.02
 // @description  Cleaning up the Gusto
 // @author       Antonio Hidalgo
 // @match        *://*.gusto.com/*
@@ -22,10 +22,10 @@
 
         function evaluatePtoFormPopup() {
             function decorateVerbiage() {
-                let description_parent = jQuery("p.layout-main-simple-paragraph.margin-bottom-20px").parent();
+                let description_parent = jQuery("div.modal-body-content");
                 let already_decorated = description_parent.find("p.rule_warning").length;
                 if (!already_decorated) {
-                    description_parent.append('<p class="rule_warning layout-main-simple-paragraph margin-bottom-20px"><span>To submit, your request\'s # of hours <span class="strong">must not exceed</span> your # of remaining, Available Hours.</span></p>');
+                    description_parent.prepend('<p class="rule_warning layout-main-simple-paragraph margin-bottom-20px"><span>To submit, your request\'s # of hours <span class="strong">must not exceed</span> your # of remaining, Available Hours.</span></p>');
                 }
                 return already_decorated;
             } // End of decorateVerbiage declaration
@@ -77,7 +77,7 @@
 
             function wireTheButton() {
                 let my_interval = setInterval(() => {
-                    let the_button = jQuery("div.layout-main-simple.margin-top-15px button.btn-primary:visible");
+                    let the_button = jQuery("main.layout-main button.btn-primary:visible");
                     if (the_button.length) {
                         the_button.click(function handleTimeOffClick() {
                             // wait for popup to render and then evaluate it.
@@ -88,7 +88,7 @@
                 }, 333);
             }
 
-            var onPtoPage = jQuery("li.time-off-nav-item.current");
+            var onPtoPage = jQuery("li.time-off.selected").length;
             if (onPtoPage) {
                 log("on pto page.");
                 // after nav click, wait for Request Time Off button to load
@@ -98,7 +98,7 @@
 
         function wireUpTheMenu() {
             mightBeOnTimeOffMenuItem();
-            jQuery("div.nav-menu a.time-off span").click(mightBeOnTimeOffMenuItem);
+            jQuery("nav.nav-menu li.time-off a span").click(mightBeOnTimeOffMenuItem);
         }
 
         // after page load, waiting for nav to load
